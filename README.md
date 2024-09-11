@@ -4,11 +4,12 @@
 
 The script first identifies duplicate `TransactionID` values in the `Sales_Transaction` table using the following query:
 
-```sql
+````sql
 select TransactionID, count(*)
 from Sales_Transaction
 group by TransactionID
 having count(*) > 1;
+````
 
 | TransactionID | count(*) |
 |---------------|----------|
@@ -27,3 +28,5 @@ having count(*) > 1;
 | 8             | 21         | 65        | 4                 | 2023-01-01      | 17.19 |
 | 9             | 615        | 145       | 4                 | 2023-01-01      | 66.00 |
 | 10            | 122        | 158       | 2                 | 2023-01-01      | 22.27 |
+
+
