@@ -1,0 +1,715 @@
+Q1. Write a query to identify the number of duplicates in "sales_transaction" table. Also, create a separate table containing the unique values and remove the the original table from the databases and replace the name of the new table with the original name.
+
+select TransactionID, count(*)
+from Sales_Transaction
+group by TransactionID
+having count(*)>1;
+
+create table dup_sales select distinct * from Sales_Transaction;
+
+drop table Sales_Transaction;
+
+alter table dup_sales rename to Sales_Transaction;
+
+select * from Sales_Transaction;
+
+Output:
+
++---------------+----------+
+| TransactionID | count(*) |
++---------------+----------+
+|          4999 |        2 |
+|          5000 |        2 |
++---------------+----------+
++---------------+------------+-----------+-------------------+-----------------+-------+
+| TransactionID | CustomerID | ProductID | QuantityPurchased | TransactionDate | Price |
++---------------+------------+-----------+-------------------+-----------------+-------+
+|             1 |        103 |       120 |                 3 | 2023-01-01      | 30.43 |
+|             2 |        436 |       126 |                 1 | 2023-01-01      | 15.19 |
+|             3 |        861 |        55 |                 3 | 2023-01-01      | 67.76 |
+|             4 |        271 |        27 |                 2 | 2023-01-01      | 65.77 |
+|             5 |        107 |       118 |                 1 | 2023-01-01      | 14.55 |
+|             6 |         72 |        53 |                 1 | 2023-01-01      | 26.27 |
+|             7 |        701 |        39 |                 2 | 2023-01-01      | 95.92 |
+|             8 |         21 |        65 |                 4 | 2023-01-01      | 17.19 |
+|             9 |        615 |       145 |                 4 | 2023-01-01      |    66 |
+|            10 |        122 |       158 |                 2 | 2023-01-01      | 22.27 |
+
+
+Q2. Write a query to identify the discrepancies in the price of the same product in "sales_transaction" and "product_inventory" tables. Also, update those discrepancies to match the price in both the tables.
+
+
+select st.TransactionID, st.Price as TransactionPrice, pi.Price as InventoryPrice fromSales_Transaction st join Product_Inventory pi on (st.ProductID=pi.ProductID) and (st.Price<>pi.Price); 
+
+update Sales_Transaction st join Product_Inventory pi on st.ProductID=pi.ProductIDset st.price = pi.pricewhere st.Price<>pi.Price;
+
+select * from Sales_Transaction; 
+
+
+Output:
++---------------+------------------+----------------+
+| TransactionID | TransactionPrice | InventoryPrice |
++---------------+------------------+----------------+
+|          4968 |             9312 |          93.12 |
+|          4754 |             9312 |          93.12 |
+|          4532 |             9312 |          93.12 |
+|          4408 |             9312 |          93.12 |
+|          4221 |             9312 |          93.12 |
+|          4158 |             9312 |          93.12 |
+|          4148 |             9312 |          93.12 |
+|          3962 |             9312 |          93.12 |
+|          3959 |             9312 |          93.12 |
+|          3918 |             9312 |          93.12 |
+|          3839 |             9312 |          93.12 |
+|          3635 |             9312 |          93.12 |
+|          3377 |             9312 |          93.12 |
+|          2939 |             9312 |          93.12 |
+|          2608 |             9312 |          93.12 |
+|          1910 |             9312 |          93.12 |
+|          1377 |             9312 |          93.12 |
+|           591 |             9312 |          93.12 |
+|           236 |             9312 |          93.12 |
+|            88 |             9312 |          93.12 |
++---------------+------------------+----------------+
++---------------+------------+-----------+-------------------+-----------------+-------+
+| TransactionID | CustomerID | ProductID | QuantityPurchased | TransactionDate | Price |
++---------------+------------+-----------+-------------------+-----------------+-------+
+|             1 |        103 |       120 |                 3 | 2023-01-01      | 30.43 |
+|             2 |        436 |       126 |                 1 | 2023-01-01      | 15.19 |
+|             3 |        861 |        55 |                 3 | 2023-01-01      | 67.76 |
+|             4 |        271 |        27 |                 2 | 2023-01-01      | 65.77 |
+|             5 |        107 |       118 |                 1 | 2023-01-01      | 14.55 |
+|             6 |         72 |        53 |                 1 | 2023-01-01      | 26.27 |
+|             7 |        701 |        39 |                 2 | 2023-01-01      | 95.92 |
+|             8 |         21 |        65 |                 4 | 2023-01-01      | 17.19 |
+|             9 |        615 |       145 |                 4 | 2023-01-01      |    66 |
+|            10 |        122 |       158 |                 2 | 2023-01-01      | 22.27 |
+
+
+Q3.Write a SQL query to identify the null values in the dataset and replace those by “Unknown”.
+
+select count(*) from customer_profiles where Location is null;
+update customer_profiles set Location = 'unknown' where Location is null; 
+select * from customer_profiles;
+
+Output:
+
++----------+
+| count(*) |
++----------+
+|       13 |
++----------+
++------------+------+--------+----------+----------+
+| CustomerID | Age  | Gender | Location | JoinDate |
++------------+------+--------+----------+----------+
+|          1 |   63 | Other  | East     | 01/01/20 |
+|          2 |   63 | Male   | North    | 02/01/20 |
+|          3 |   34 | Other  | North    | 03/01/20 |
+|          4 |   19 | Other  | unknown  | 04/01/20 |
+|          5 |   57 | Male   | North    | 05/01/20 |
+|          6 |   22 | Other  | South    | 06/01/20 |
+|          7 |   56 | Other  | East     | 07/01/20 |
+|          8 |   65 | Female | East     | 08/01/20 |
+|          9 |   33 | Male   | West     | 09/01/20 |
+|         10 |   34 | Male   | East     | 10/01/20 |
+
+
+Q4. Write a SQL query to clean the DATE column in the dataset.
+
+alter table Sales_transaction add TransactionDate_updated DATE; 
+update Sales_transaction set TransactionDate_updated=DATE_FORMAT(TransactionDate, '%Y-%m-%d'); 
+select * from Sales_transaction;
+
+Output:
+
++---------------+------------+-----------+-------------------+-----------------+-------+-------------------------+
+| TransactionID | CustomerID | ProductID | QuantityPurchased | TransactionDate | Price | TransactionDate_updated |
++---------------+------------+-----------+-------------------+-----------------+-------+-------------------------+
+|             1 |        103 |       120 |                 3 | 2023-01-01      | 30.43 | 2023-01-01              |
+|             2 |        436 |       126 |                 1 | 2023-01-01      | 15.19 | 2023-01-01              |
+|             3 |        861 |        55 |                 3 | 2023-01-01      | 67.76 | 2023-01-01              |
+|             4 |        271 |        27 |                 2 | 2023-01-01      | 65.77 | 2023-01-01              |
+|             5 |        107 |       118 |                 1 | 2023-01-01      | 14.55 | 2023-01-01              |
+|             6 |         72 |        53 |                 1 | 2023-01-01      | 26.27 | 2023-01-01              |
+|             7 |        701 |        39 |                 2 | 2023-01-01      | 95.92 | 2023-01-01              |
+|             8 |         21 |        65 |                 4 | 2023-01-01      | 17.19 | 2023-01-01              |
+|             9 |        615 |       145 |                 4 | 2023-01-01      |    66 | 2023-01-01              |
+|            10 |        122 |       158 |                 2 | 2023-01-01      | 22.27 | 2023-01-01              |
+|            11 |        467 |       181 |                 2 | 2023-01-01      |    69 | 2023-01-01              |
+
+
+Q5. Write a SQL query to summarize the total sales and quantities sold per product by the company.
+
+
+select ProductID, sum(QuantityPurchased) as TotalUnitsSold, sum(Price * QuantityPurchased) as TotalSales 
+from Sales_transaction 
+group by ProductID
+order by TotalSales desc;
+
+Output:
+
++-----------+----------------+--------------------+
+| ProductID | TotalUnitsSold | TotalSales         |
++-----------+----------------+--------------------+
+|        17 |            100 |               9450 |
+|        87 |             92 |  7817.239999999998 |
+|       179 |             86 |  7388.259999999998 |
+|        96 |             72 | 7132.3200000000015 |
+|        54 |             86 | 7052.8600000000015 |
+|       187 |             82 |  6915.880000000003 |
+|       156 |             76 |  6827.840000000002 |
+|        57 |             78 |  6622.199999999999 |
+|       200 |             69 |  6479.790000000001 |
+|       127 |             68 |  6415.799999999999 |
+|        28 |             69 |  6386.640000000001 |
+|       106 |             63 |  6262.829999999999 |
+|       104 |             72 |  6230.160000000001 |
+|       195 |             87 |  6229.199999999999 |
+|       103 |             66 |            6191.46 |
+|        85 |             62 |  6188.219999999998 |
+|       190 |             66 |            6126.12 |
+|        75 |             63 |  6094.619999999998 |
+|        36 |             61 |  6067.060000000001 |
+|       119 |             67 |  6052.109999999999 |
+|       116 |             75 |  6033.750000000001 |
+|        76 |             64 |               6032 |
+
+
+Q6. Write a SQL query to count the number of transactions per customer to understand purchase frequency.
+
+select CustomerID, count(TransactionID) as NumberOfTransactions
+from Sales_transaction
+group by CustomerID
+order by NumberOfTransactions desc;
+
+Output:
+
++------------+----------------------+
+| CustomerID | NumberOfTransactions |
++------------+----------------------+
+|        664 |                   14 |
+|        958 |                   12 |
+|         99 |                   12 |
+|        113 |                   12 |
+|        929 |                   12 |
+|        936 |                   12 |
+|        670 |                   12 |
+|         39 |                   12 |
+|        277 |                   11 |
+|        476 |                   11 |
+|        776 |                   11 |
+|        727 |                   11 |
+|        648 |                   11 |
+|        613 |                   11 |
+|        268 |                   11 |
+|        881 |                   11 |
+|        659 |                   11 |
+|        704 |                   11 |
+|         75 |                   11 |
+
+
+Q7. Write a SQL query to evaluate the performance of the product categories based on the total sales which help us understand the product categories which needs to be promoted in the marketing campaigns.
+
+select pi.Category,  sum(st.QuantityPurchased) as TotalUnitsSold,  sum(st.QuantityPurchased*st.Price) as TotalSales
+from Sales_transaction st join product_inventory pi 
+on pi.ProductID=st.ProductID 
+group by pi.Category
+order by TotalSales desc;
+
+Output:
+
++-----------------+----------------+--------------------+
+| Category        | TotalUnitsSold | TotalSales         |
++-----------------+----------------+--------------------+
+| Home & Kitchen  |           3477 | 217755.93999999945 |
+| Electronics     |           3037 |  177548.4799999996 |
+| Clothing        |           2810 | 162874.21000000057 |
+| Beauty & Health |           3001 | 143824.98999999947 |
++-----------------+----------------+--------------------+
+
+
+Q8. Write a SQL query to find the top 10 products with the highest total sales revenue from the sales transactions. This will help the company to identify the High sales products which needs to be focused to increase the revenue of the company.
+
+select ProductID, sum(QuantityPurchased*Price) as TotalRevenue
+from Sales_transaction
+group by ProductID
+order by TotalRevenue desc
+limit 10;
+
+Output:
+
++-----------+--------------------+
+| ProductID | TotalRevenue       |
++-----------+--------------------+
+|        17 |               9450 |
+|        87 |  7817.239999999998 |
+|       179 |  7388.259999999998 |
+|        96 | 7132.3200000000015 |
+|        54 | 7052.8600000000015 |
+|       187 |  6915.880000000003 |
+|       156 |  6827.840000000002 |
+|        57 |  6622.199999999999 |
+|       200 |  6479.790000000001 |
+|       127 |  6415.799999999999 |
++-----------+--------------------+
+
+
+Q9.Write a SQL query to find the ten products with the least amount of units sold from the sales transactions, provided that at least one unit was sold for those products.
+
+select ProductID, sum(QuantityPurchased) as TotalUnitsSold
+from Sales_transaction
+group by ProductID
+having TotalUnitsSold>0
+order by TotalUnitsSold asc
+limit 10;
+
+Output:
+
++-----------+----------------+
+| ProductID | TotalUnitsSold |
++-----------+----------------+
+|       142 |             27 |
+|        33 |             31 |
+|       174 |             33 |
+|       159 |             35 |
+|        60 |             35 |
+|        41 |             35 |
+|        91 |             35 |
+|       198 |             36 |
+|       124 |             39 |
+|       163 |             39 |
++-----------+----------------+
+
+
+Q10. Write a SQL query to identify the sales trend to understand the revenue pattern of the company.
+
+select TransactionDate as DATETRANS,
+   count(TransactionID) as Transaction_count,
+   sum(QuantityPurchased) as TotalUnitsSold,
+   sum(QuantityPurchased*Price) as TotalSales
+from Sales_transaction
+group by DATETRANS
+order by DATETRANS desc;
+
+Output:
+
++------------+-------------------+----------------+--------------------+
+| DATETRANS  | Transaction_count | TotalUnitsSold | TotalSales         |
++------------+-------------------+----------------+--------------------+
+| 2023-07-28 |                 8 |             18 | 1158.8600000000001 |
+| 2023-07-27 |                24 |             58 | 3065.8099999999995 |
+| 2023-07-26 |                24 |             58 | 3168.0400000000004 |
+| 2023-07-25 |                24 |             54 |            2734.26 |
+| 2023-07-24 |                24 |             63 |  3691.079999999999 |
+| 2023-07-23 |                24 |             57 | 3578.5800000000004 |
+| 2023-07-22 |                24 |             62 |             3350.8 |
+| 2023-07-21 |                24 |             61 |            3443.72 |
+| 2023-07-20 |                24 |             60 |            3216.57 |
+| 2023-07-19 |                24 |             52 | 2068.5000000000005 |
+| 2023-07-18 |                24 |             57 | 3251.0699999999997 |
+| 2023-07-17 |                24 |             56 | 3051.5099999999998 |
+| 2023-07-16 |                24 |             66 |            3145.46 |
+
+
+Q11. Write a SQL query to understand the month on month growth rate of sales of the company which will help understand the growth trend of the company.
+
+WITH MonthlySales AS (
+    SELECT
+        Month(TransactionDate) as month,
+        SUM(QuantityPurchased * Price) AS total_sales
+    FROM
+        Sales_transaction
+    GROUP BY
+        month
+),
+GrowthRate AS (
+    SELECT
+        month,
+        total_sales,
+        LAG(total_sales) OVER (ORDER BY Month) AS previous_month_sales
+    FROM
+        MonthlySales
+)
+SELECT
+    month,
+    total_sales,
+    previous_month_sales,
+    CASE
+        WHEN previous_month_sales IS NULL OR previous_month_sales = 0 THEN NULL
+        ELSE ((total_sales - previous_month_sales) / previous_month_sales) * 100
+    END AS mom_growth_percentage
+FROM
+    GrowthRate
+ORDER BY
+    month;
+
+
+Output:
+
++-------+--------------------+----------------------+-----------------------+
+| month | total_sales        | previous_month_sales | mom_growth_percentage |
++-------+--------------------+----------------------+-----------------------+
+|     1 | 104289.17999999993 |                 NULL |                  NULL |
+|     2 |  96690.98999999995 |   104289.17999999993 |    -7.285693491884769 |
+|     3 |          103271.49 |    96690.98999999995 |     6.805701337839299 |
+|     4 | 101561.09000000014 |            103271.49 |    -1.656217025628141 |
+|     5 | 102998.83999999995 |   101561.09000000014 |    1.4156504228142972 |
+|     6 |          102210.28 |   102998.83999999995 |   -0.7656008553105592 |
+|     7 |  90981.75000000004 |            102210.28 |   -10.985714939827927 |
++-------+--------------------+----------------------+-----------------------+
+
+
+Q12. Write a SQL query that describes the number of transaction along with the total amount spent by each customer which are on the higher side and will help us understand the customers who are the high frequency purchase customers in the company.
+
+select CustomerID, 
+  count(TransactionID) as NumberOfTransactions,
+  sum(QuantityPurchased*Price) as TotalSpent
+from sales_transaction
+group by CustomerID
+having TotalSpent>1000 and NumberOfTransactions>10
+order by TotalSpent desc;
+
+Output:
+
++------------+----------------------+--------------------+
+| CustomerID | NumberOfTransactions | TotalSpent         |
++------------+----------------------+--------------------+
+|        936 |                   12 | 2834.4700000000003 |
+|        664 |                   14 |            2519.04 |
+|        670 |                   12 |            2432.15 |
+|         39 |                   12 |            2221.29 |
+|        958 |                   12 |            2104.71 |
+|         75 |                   11 | 1862.7299999999998 |
+|        476 |                   11 | 1821.4399999999998 |
+|        929 |                   12 |            1798.42 |
+|        881 |                   11 | 1713.2300000000002 |
+|        704 |                   11 |            1628.34 |
+|        648 |                   11 | 1572.9999999999998 |
+|        776 |                   11 | 1551.0100000000002 |
+|         99 |                   12 | 1547.3599999999997 |
+|        113 |                   12 |            1525.46 |
+|        613 |                   11 | 1451.2700000000002 |
+|        727 |                   11 | 1415.6499999999999 |
+|        676 |                   11 | 1196.9699999999998 |
+|        277 |                   11 | 1163.3799999999999 |
++------------+----------------------+--------------------+
+
+
+Q13. Write a SQL query that describes the number of transaction along with the total amount spent by each customer, which will help us understand the customers who are occasional customers or have low purchase frequency in the company.
+
+select CustomerID, 
+  count(TransactionID) as NumberOfTransactions,
+  sum(QuantityPurchased*Price) as TotalSpent
+from sales_transaction
+group by CustomerID
+having NumberOfTransactions<=2
+order by NumberOfTransactions asc,TotalSpent desc;
+
+Output:
+
++------------+----------------------+--------------------+
+| CustomerID | NumberOfTransactions | TotalSpent         |
++------------+----------------------+--------------------+
+|         94 |                    1 |             360.64 |
+|        181 |                    1 |             298.23 |
+|        979 |                    1 |             265.16 |
+|        317 |                    1 |             257.73 |
+|        479 |                    1 |             254.91 |
+|        799 |                    1 | 254.70000000000002 |
+|         45 |                    1 | 241.35000000000002 |
+|        110 |                    1 |             236.16 |
+|        169 |                    1 |             230.37 |
+|        706 |                    1 |             224.49 |
+|        965 |                    1 |             215.72 |
+|        212 |                    1 | 203.96999999999997 |
+|        333 |                    1 |                189 |
+|        603 |                    1 |             171.56 |
+|        890 |                    1 |              171.4 |
+|        528 |                    1 |             170.36 |
+|        368 |                    1 |              165.6 |
+|        545 |                    1 |             156.81 |
+|        870 |                    1 |             132.58 |
+|        409 |                    1 |             104.54 |
+|        496 |                    1 |               94.5 |
+|        189 |                    1 |              93.18 |
+|        240 |                    1 |              92.83 |
+|        680 |                    1 |              92.49 |
+|         24 |                    1 |               90.8 |
+|          6 |                    1 |               80.7 |
+|       1000 |                    1 |              78.21 |
+|        595 |                    1 |              73.53 |
+|        185 |                    1 |              69.84 |
+|        810 |                    1 |              68.88 |
+|        355 |                    1 |              61.64 |
+|        487 |                    1 |              60.92 |
+|        315 |                    1 |              53.91 |
+|        150 |                    1 | 43.650000000000006 |
+|        766 |                    1 |              28.86 |
+|        555 |                    1 |              22.27 |
+|        219 |                    1 |              22.24 |
+|        255 |                    1 |              14.29 |
+|        464 |                    1 |              10.95 |
+|        534 |                    2 |             565.96 |
+|        591 |                    2 |             538.79 |
+|        347 |                    2 |             530.48 |
+|        245 |                    2 |             522.53 |
+|        241 |                    2 |             492.18 |
+|        412 |                    2 |             437.88 |
+|        652 |                    2 |             433.66 |
+|        583 |                    2 | 431.07000000000005 |
+|        275 |                    2 |              430.6 |
+|        135 |                    2 |             428.82 |
+|        205 |                    2 |             426.26 |
+|        249 |                    2 |             416.08 |
+|        875 |                    2 | 410.81999999999994 |
+|        784 |                    2 | 408.15999999999997 |
+|        786 |                    2 |             407.56 |
+|        372 |                    2 | 398.81000000000006 |
+|        339 |                    2 |             391.46 |
+|        597 |                    2 | 382.10999999999996 |
+|        535 |                    2 |             376.58 |
+|        674 |                    2 |             359.03 |
+|        322 |                    2 |             352.26 |
+|        860 |                    2 |             340.82 |
+|        723 |                    2 |             340.69 |
+|        434 |                    2 | 332.56000000000006 |
+|        889 |                    2 |             331.86 |
+|        199 |                    2 | 330.90999999999997 |
+|        721 |                    2 |             323.13 |
+|        961 |                    2 |             322.41 |
+|        252 |                    2 |             320.51 |
+|        722 |                    2 |             318.94 |
+|        389 |                    2 |             314.12 |
+|        351 |                    2 |             314.07 |
+|        627 |                    2 | 311.29999999999995 |
+|        791 |                    2 |             307.22 |
+|        171 |                    2 |              303.9 |
+|        136 |                    2 |             300.25 |
+|        480 |                    2 |             296.94 |
+|        747 |                    2 |             295.42 |
+|         31 |                    2 |             294.74 |
+|        841 |                    2 |             292.14 |
+|        790 |                    2 | 290.97999999999996 |
+|        818 |                    2 | 285.34000000000003 |
+|        484 |                    2 |             283.56 |
+|        423 |                    2 | 281.96999999999997 |
+|         30 |                    2 |             279.88 |
+|        297 |                    2 |             266.33 |
+|        863 |                    2 |             259.11 |
+|        858 |                    2 | 258.46000000000004 |
+|        468 |                    2 |             254.99 |
+|        719 |                    2 |              252.6 |
+|        123 |                    2 | 243.36999999999998 |
+|        530 |                    2 | 241.22999999999996 |
+|        452 |                    2 |             240.87 |
+|        121 |                    2 |             237.34 |
+|        717 |                    2 | 230.01000000000002 |
+|        651 |                    2 |             223.38 |
+|        697 |                    2 |             217.12 |
+|        668 |                    2 |             213.57 |
+|        421 |                    2 |             213.18 |
+|        248 |                    2 |             198.05 |
+|        269 |                    2 | 196.17000000000002 |
+|        636 |                    2 |             178.43 |
+|        868 |                    2 |             176.07 |
+|          4 |                    2 | 174.07999999999998 |
+|        458 |                    2 |             172.64 |
+|        716 |                    2 |             170.16 |
+|        950 |                    2 |             165.21 |
+|        712 |                    2 |             159.95 |
+|         91 |                    2 |             153.33 |
+|        606 |                    2 |             152.95 |
+|         64 |                    2 |             149.74 |
+|        568 |                    2 |              145.5 |
+|        788 |                    2 |             144.37 |
+|        439 |                    2 |             134.67 |
+|        839 |                    2 |             133.94 |
+|        175 |                    2 | 133.79000000000002 |
+|         80 |                    2 |             130.79 |
+|         50 |                    2 |             125.19 |
+|        809 |                    2 |                121 |
+|        967 |                    2 | 111.39999999999999 |
+|        834 |                    2 |             110.91 |
+|        742 |                    2 | 109.60999999999999 |
+|        880 |                    2 | 102.94000000000001 |
+|        413 |                    2 |              93.82 |
+|         77 |                    2 |              91.79 |
+|         18 |                    2 |              91.07 |
+|        193 |                    2 |              86.82 |
+|         74 |                    2 |              84.08 |
+|         32 |                    2 |              82.75 |
+|        844 |                    2 |              64.06 |
+|        444 |                    2 |              40.95 |
++------------+----------------------+--------------------+
+
+Q14.Write a SQL query that describes the total number of purchases made by each customer against each productID to understand the repeat customers in the company.
+
+select CustomerID, ProductID,
+  count(TransactionID) as TimesPurchased
+from Sales_transaction
+group by CustomerID,ProductID
+having TimesPurchased>1
+order by TimesPurchased desc;
+
+Output:
+
++------------+-----------+----------------+
+| CustomerID | ProductID | TimesPurchased |
++------------+-----------+----------------+
+|        685 |       192 |              3 |
+|        758 |        31 |              2 |
+|         75 |        47 |              2 |
+|        233 |        68 |              2 |
+|        133 |       147 |              2 |
+|        602 |       101 |              2 |
+|        584 |        83 |              2 |
+|        302 |        11 |              2 |
+|        467 |        93 |              2 |
+|        227 |        40 |              2 |
+|        974 |        27 |              2 |
+|        506 |       105 |              2 |
+|        912 |       103 |              2 |
+|        229 |        32 |              2 |
+|        983 |       182 |              2 |
+|        477 |       143 |              2 |
+|        955 |        25 |              2 |
+|        825 |        81 |              2 |
+|        395 |       171 |              2 |
+|        708 |        21 |              2 |
+|        899 |        69 |              2 |
+|        443 |         7 |              2 |
+|        996 |       165 |              2 |
+|        476 |        80 |              2 |
+|        973 |        51 |              2 |
+|         20 |        19 |              2 |
+|        520 |        74 |              2 |
+|        324 |        99 |              2 |
+|        124 |        16 |              2 |
+|        662 |       151 |              2 |
+|        399 |       123 |              2 |
+|        291 |        46 |              2 |
+|        971 |       184 |              2 |
+|         60 |        78 |              2 |
+|        524 |        84 |              2 |
+|        387 |       164 |              2 |
+|        710 |       156 |              2 |
+|         69 |        59 |              2 |
+|        444 |       170 |              2 |
+|         39 |        57 |              2 |
+|        986 |       116 |              2 |
+|        626 |       189 |              2 |
+|         49 |       179 |              2 |
+|        852 |        66 |              2 |
+|          2 |        65 |              2 |
+|        254 |       190 |              2 |
+|        225 |        75 |              2 |
+|        613 |        44 |              2 |
+|        296 |       196 |              2 |
+|        822 |       165 |              2 |
+|        242 |       172 |              2 |
+|        492 |        74 |              2 |
+|        215 |        13 |              2 |
+|        306 |        98 |              2 |
+|        646 |       155 |              2 |
+|        526 |        54 |              2 |
+|         28 |        62 |              2 |
+|        350 |        39 |              2 |
+|        546 |        15 |              2 |
+|        447 |       160 |              2 |
+|        910 |        69 |              2 |
+|        919 |        26 |              2 |
+|        467 |       181 |              2 |
+|        143 |        63 |              2 |
+|        895 |       187 |              2 |
+|         39 |        58 |              2 |
+|        217 |       113 |              2 |
+|         99 |        10 |              2 |
+|        664 |        75 |              2 |
+|        336 |        16 |              2 |
++------------+-----------+----------------+
+
+
+Q15. Write a SQL query that describes the duration between the first and the last purchase of the customer in that particular company to understand the loyalty of the customer.
+
+with purchase_dates as (
+select CustomerID,
+   min(str_to_date(TransactionDate,'%Y-%m-%d')) as FirstPurchase,
+   max(str_to_date(TransactionDate,'%Y-%m-%d')) as LastPurchase
+from Sales_transaction
+group by CustomerID)
+
+select CustomerID,FirstPurchase,LastPurchase, 
+  datediff(LastPurchase,FirstPurchase) as DaysBetweenPurchases
+from purchase_dates
+where datediff(LastPurchase,FirstPurchase)>0
+order by DaysBetweenPurchases desc;
+
+Output:
+
++------------+---------------+--------------+----------------------+
+| CustomerID | FirstPurchase | LastPurchase | DaysBetweenPurchases |
++------------+---------------+--------------+----------------------+
+|        215 | 2023-01-01    | 2023-07-28   |                  208 |
+|        414 | 2023-01-02    | 2023-07-26   |                  205 |
+|        664 | 2023-01-01    | 2023-07-24   |                  204 |
+|        701 | 2023-01-01    | 2023-07-23   |                  203 |
+|        277 | 2023-01-02    | 2023-07-24   |                  203 |
+|         22 | 2023-01-02    | 2023-07-24   |                  203 |
+|        976 | 2023-01-02    | 2023-07-24   |                  203 |
+|        647 | 2023-01-03    | 2023-07-25   |                  203 |
+|        162 | 2023-01-05    | 2023-07-27   |                  203 |
+|        806 | 2023-01-02    | 2023-07-23   |                  202 |
+|        511 | 2023-01-02    | 2023-07-23   |                  202 |
+|        703 | 2023-01-05    | 2023-07-26   |                  202 |
+|        188 | 2023-01-06    | 2023-07-27   |                  202 |
+|        380 | 2023-01-06    | 2023-07-27   |                  202 |
+|        566 | 2023-01-04    | 2023-07-24   |                  201 |
+|        748 | 2023-01-02    | 2023-07-21   |                  200 |
+|        687 | 2023-01-03    | 2023-07-22   |                  200 |
+|        943 | 2023-01-04    | 2023-07-23   |                  200 |
+|         65 | 2023-01-06    | 2023-07-25   |                  200 |
+|        648 | 2023-01-06    | 2023-07-25   |                  200 |
+
+
+Q16. Write a SQL query that segments customers based on the total quantity of products they have purchased. Also, count the number of customers in each segment which will help us target a particular segment for marketing.
+
+
+CREATE TABLE customer_SEGMENT AS
+SELECT 
+    CustomerID,
+    CASE 
+        WHEN TotalQuantity > 30 THEN 'High'
+        WHEN TotalQuantity BETWEEN 10 AND 30 THEN 'Med'
+        WHEN TotalQuantity BETWEEN 1 AND 10 THEN 'Low'
+        ELSE 'None'
+    END AS CustomerSegment
+FROM (
+    SELECT 
+        CustomerID,
+        SUM(QuantityPurchased) AS TotalQuantity
+    FROM 
+        sales_transaction
+    GROUP BY 
+        CustomerID
+) AS totquant;
+
+
+SELECT 
+    CustomerSegment, 
+    COUNT(*) 
+FROM 
+    customer_SEGMENT
+GROUP BY 
+    CustomerSegment;
+
+
+Output:
+
++-----------------+----------+
+| CustomerSegment | COUNT(*) |
++-----------------+----------+
+| Med             |      627 |
+| Low             |      355 |
+| High            |        7 |
++-----------------+----------+
+
