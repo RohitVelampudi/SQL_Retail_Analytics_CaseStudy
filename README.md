@@ -569,7 +569,6 @@ Output:
 ## 16. Segmenting Customers Based on Total Quantity Purchased and Counting Customers in Each Segment
 
 ```sql
--- Create a table to segment customers based on total quantity purchased
 CREATE TABLE customer_SEGMENT AS
 SELECT 
     CustomerID,
@@ -589,7 +588,6 @@ FROM (
         CustomerID
 ) AS totquant;
 
--- Count the number of customers in each segment
 SELECT 
     CustomerSegment, 
     COUNT(*) AS NumberOfCustomers
